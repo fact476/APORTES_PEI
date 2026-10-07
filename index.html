@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Áreas y asignaturas del PEI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: presentación guiada sobre hoja cuadriculada. Barra superior con índice y glosario; una idea por diapositiva; explorador por área y tablero de correcciones interactivos */
+:root{
+  --paper:#f6f8fb; --grid:#e1e7f0; --ink:#14233d; --ink-2:#4a5a75; --rule:#c9d3e2; --card:#ffffff;
+  --blue:#1f4fd1; --blue-soft:#e3eaff;
+  --ok:#11845b; --ok-soft:#dcf3e9; --warn:#b86a00; --warn-soft:#fdefd6; --bad:#c4372d; --bad-soft:#fbe2df;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Literata",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e1522; --grid:#17223a; --ink:#e7edf7; --ink-2:#a3b1c8; --rule:#2a3854; --card:#141e31;
+  --blue:#7ea2ff; --blue-soft:#1b2a4d; --ok:#45c98f; --ok-soft:#11352a; --warn:#f2a93b; --warn-soft:#3a2a10; --bad:#ff7a6e; --bad-soft:#3d1a18;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1522; --grid:#17223a; --ink:#e7edf7; --ink-2:#a3b1c8; --rule:#2a3854; --card:#141e31;
+  --blue:#7ea2ff; --blue-soft:#1b2a4d; --ok:#45c98f; --ok-soft:#11352a; --warn:#f2a93b; --warn-soft:#3a2a10; --bad:#ff7a6e; --bad-soft:#3d1a18;
+  color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;
+  color:var(--ink);font-family:var(--f-body);font-size:clamp(16px,1.3vw,19px);line-height:1.5;overflow:hidden}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+/* barra superior */
+.top{position:fixed;top:0;left:0;right:0;height:52px;padding:0 clamp(12px,3vw,40px);display:flex;align-items:center;gap:10px;z-index:8;
+  padding-top:env(safe-area-inset-top,0px);background:color-mix(in srgb,var(--paper) 90%,transparent);border-bottom:1.5px solid var(--rule)}
+.top .brand{font-family:var(--f-display);font-weight:800;font-stretch:85%;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .sec{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
+.tbtn{font-family:var(--f-display);font-weight:800;font-size:14px;border:1.5px solid var(--ink);background:var(--card);padding:6px 12px;cursor:pointer}
+.bar{position:fixed;top:52px;left:0;height:4px;background:var(--blue);transition:width .3s;z-index:8}
+/* diapositivas */
+.deck{position:relative;height:100%;width:100%;overflow:hidden}
+.slide{position:absolute;inset:0;padding:calc(76px + env(safe-area-inset-top,0px)) clamp(16px,5vw,88px) 96px;display:flex;flex-direction:column;gap:clamp(12px,1.6vw,20px);
+  overflow-y:auto;opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .35s,transform .35s,visibility .35s}
+.slide.on{opacity:1;visibility:visible;transform:none}
+@media (prefers-reduced-motion:reduce){.slide{transition:none;transform:none}}
+.kicker{font-family:var(--f-mono);font-size:.72em;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.04;text-wrap:balance}
+h2{font-size:clamp(28px,4vw,58px);font-weight:850;font-stretch:78%;max-width:24ch}
+h2 em{font-style:normal;color:var(--blue)}
+.lead{font-size:1.1em;max-width:64ch;margin:0}
+.pg{font-family:var(--f-mono);font-size:.74em;color:var(--blue);white-space:nowrap}
+.src{font-family:var(--f-mono);font-size:.72em;color:var(--ink-2);margin:0}
+.help{display:flex;gap:10px;align-items:flex-start;background:var(--blue-soft);border-left:5px solid var(--blue);padding:10px 14px;font-size:.88em;max-width:80ch}
+.help b{font-family:var(--f-display)}
+/* términos del glosario */
+.term{border:0;background:none;padding:0;cursor:help;color:inherit;border-bottom:2px dotted var(--blue);font:inherit}
+.pop{position:fixed;z-index:20;max-width:min(360px,calc(100vw - 32px));background:var(--ink);color:var(--paper);padding:12px 14px;font-size:15px;box-shadow:6px 6px 0 var(--blue)}
+.pop b{font-family:var(--f-display);display:block;margin-bottom:4px}
+/* portada */
+.cover{justify-content:safe center}
+.cover h1{font-size:clamp(40px,6.2vw,96px);font-weight:900;font-stretch:70%;letter-spacing:-.01em;max-width:13ch}
+.cover h1 em{font-style:normal;color:var(--blue)}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;max-width:960px}
+.howto div{background:var(--card);border:1.5px solid var(--rule);padding:12px 14px;font-size:.88em}
+.howto b{font-family:var(--f-display);display:block}
+.cta{align-self:flex-start;font-family:var(--f-display);font-weight:850;font-size:1.05em;background:var(--blue);color:#fff;border:0;padding:12px 18px;cursor:pointer;box-shadow:5px 5px 0 var(--ink)}
+/* historia en 4 pasos */
+.story{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;counter-reset:s}
+.story li{counter-increment:s}
+.story button{width:100%;height:100%;text-align:left;background:var(--card);border:1.5px solid var(--ink);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;box-shadow:5px 5px 0 var(--ink);transition:transform .15s}
+.story button:hover{transform:translate(-2px,-2px)}
+.story button::before{content:counter(s);font-family:var(--f-display);font-weight:900;font-size:2.2em;color:var(--blue);line-height:1}
+.story h3{font-size:1.1em}
+.story p{margin:0;font-size:.88em;color:var(--ink-2)}
+.story .go{font-family:var(--f-mono);font-size:.7em;color:var(--blue);margin-top:auto}
+/* glosario en tarjetas */
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.gcard{background:var(--card);border:1.5px solid var(--ink);text-align:left;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-height:118px}
+.gcard h3{font-size:1.2em;display:flex;justify-content:space-between;gap:8px}
+.gcard h3 span{font-family:var(--f-mono);font-size:.6em;color:var(--blue)}
+.gcard p{margin:0;font-size:.9em}
+.gcard .ex{color:var(--ink-2);font-size:.82em}
+.gcard[aria-expanded="false"] .more{display:none}
+/* cajas */
+.quote{background:var(--card);border-left:6px solid var(--blue);padding:14px 18px;max-width:72ch}
+.quote p{margin:0}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;max-width:1100px}
+.stat{background:var(--card);border:1.5px solid var(--ink);padding:16px 18px;box-shadow:5px 5px 0 var(--ink)}
+.stat b{display:block;font-family:var(--f-display);font-size:clamp(46px,6vw,88px);font-weight:900;line-height:.9;font-stretch:75%;color:var(--blue);font-variant-numeric:tabular-nums}
+.stat span{font-family:var(--f-display);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+.tile{background:var(--card);border:1.5px solid var(--rule);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left}
+button.tile{cursor:pointer}
+button.tile:hover{border-color:var(--blue)}
+.tile .n{font-family:var(--f-mono);font-size:.7em;color:var(--ink-2)}
+.tile h3{font-size:1.04em;font-stretch:90%;font-weight:750}
+.tile p{margin:0;font-size:.86em;color:var(--ink-2)}
+.tile.ok{border-left:6px solid var(--ok)} .tile.warn{border-left:6px solid var(--warn)} .tile.bad{border-left:6px solid var(--bad)} .tile.info{border-left:6px solid var(--blue)}
+.tile.hi{border-color:var(--blue);background:var(--blue-soft)}
+.badge{align-self:flex-start;font-family:var(--f-mono);font-size:.66em;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px}
+.b-ok{background:var(--ok-soft);color:var(--ok)} .b-warn{background:var(--warn-soft);color:var(--warn)} .b-bad{background:var(--bad-soft);color:var(--bad)} .b-info{background:var(--blue-soft);color:var(--blue)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--f-mono);font-size:.72em;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+/* buscador de página */
+.finder{background:var(--card);border:1.5px solid var(--ink);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;max-width:760px}
+.finder label{font-family:var(--f-display);font-weight:700}
+.finder input{width:6em;font:inherit;font-size:1.1em;padding:6px 8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink)}
+.finder output{font-family:var(--f-display);font-weight:700;color:var(--blue)}
+/* explorador */
+.explorer{display:grid;grid-template-columns:minmax(200px,280px) minmax(0,1fr);gap:14px;align-items:start}
+.alist{display:flex;flex-direction:column;gap:6px}
+.abtn{display:flex;align-items:center;gap:8px;text-align:left;background:var(--card);border:1.5px solid var(--rule);padding:8px 10px;cursor:pointer;font-family:var(--f-display);font-weight:700;font-size:.9em}
+.abtn i{width:10px;height:10px;flex:none}
+.abtn[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.detail{background:var(--card);border:1.5px solid var(--ink);padding:18px;display:grid;gap:14px;min-width:0}
+.detail h3{font-size:1.5em;font-stretch:85%}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.dbox{border:1px dashed var(--rule);padding:10px 12px;font-size:.88em;background:var(--paper);min-width:0}
+.dbox .lbl{display:block;font-family:var(--f-mono);font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px}
+.dbox p{margin:0 0 6px}
+.clist{display:grid;gap:8px}
+.citem{border-left:4px solid var(--warn);padding:6px 10px;background:var(--paper);font-size:.86em}
+.citem.k-ya{border-left-color:var(--ok)}
+.citem b{font-family:var(--f-display);display:block;margin-bottom:4px}
+.citem dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px}
+.citem dt{font-family:var(--f-mono);font-size:.82em;color:var(--ink-2)}
+.citem dd{margin:0}
+/* contradicciones */
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.vcard{background:var(--card);border:1.5px solid var(--rule);padding:14px;display:grid;gap:8px;min-width:0}
+.vcard h3{font-size:1.08em}
+.side{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.84em}
+.side div{padding:8px;background:var(--paper);border:1px dashed var(--rule)}
+.side span{display:block;font-family:var(--f-mono);font-size:.7em;color:var(--ink-2);margin-bottom:2px}
+/* correcciones */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters .lbl{font-family:var(--f-mono);font-size:.72em;color:var(--ink-2);margin-right:4px}
+.chip{font-family:var(--f-display);font-weight:700;font-size:.82em;padding:6px 12px;border:1.5px solid var(--ink);background:var(--card);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+select.chip{padding:6px 8px}
+.count2{font-family:var(--f-mono);font-size:.78em;color:var(--ink-2)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:12px}
+.ccard{background:var(--card);border:1.5px solid var(--rule);padding:14px 16px;display:grid;gap:8px;min-width:0}
+.ccard header{display:flex;gap:10px;align-items:baseline}
+.ccard header b{font-family:var(--f-display);font-weight:900;font-size:1.7em;color:var(--blue);line-height:1}
+.ccard h3{font-size:1.04em;flex:1}
+.ccard dl{margin:0;display:grid;grid-template-columns:minmax(90px,auto) 1fr;gap:4px 10px;font-size:.84em}
+.ccard dt{font-family:var(--f-mono);font-size:.82em;color:var(--ink-2)}
+.ccard dd{margin:0}
+/* decisiones */
+.dec{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;counter-reset:d}
+.dec li{counter-increment:d;background:var(--card);border:1.5px solid var(--ink);padding:14px 16px 14px 64px;position:relative;font-size:.92em}
+.dec li::before{content:counter(d);position:absolute;left:14px;top:12px;font-family:var(--f-display);font-weight:900;font-size:2em;color:var(--blue);line-height:1}
+.dec b{font-family:var(--f-display)}
+/* quiz */
+.quiz{display:grid;gap:12px;max-width:900px}
+.q{background:var(--card);border:1.5px solid var(--ink);padding:14px 16px;display:grid;gap:8px}
+.q h3{font-size:1.06em}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--ink);background:var(--paper);padding:7px 12px;cursor:pointer;font-size:.9em;text-align:left}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.fb{margin:0;font-size:.86em;color:var(--ink-2)}
+.score{font-family:var(--f-display);font-weight:800;font-size:1.2em}
+/* paneles */
+.panel{position:fixed;top:0;bottom:0;width:min(420px,92vw);background:var(--card);border-left:2px solid var(--ink);z-index:15;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 20px;overflow-y:auto;right:0;box-shadow:-8px 0 0 var(--blue)}
+.panel h2{font-size:28px;margin-bottom:12px}
+.panel .x{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px))}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:t}
+.toc button{width:100%;text-align:left;border:1.5px solid var(--rule);background:var(--paper);padding:8px 10px;cursor:pointer;display:flex;gap:10px;font-size:.92em}
+.toc button span{font-family:var(--f-mono);color:var(--blue);min-width:2em}
+.toc button.cur{border-color:var(--ink);font-weight:700}
+.glist{display:grid;gap:10px}
+.glist div{border-bottom:1px solid var(--rule);padding-bottom:8px;font-size:.92em}
+.glist b{font-family:var(--f-display)}
+.scrim{position:fixed;inset:0;background:rgba(10,16,30,.35);z-index:14}
+/* navegación inferior */
+.nav{position:fixed;left:0;right:0;bottom:0;padding:10px clamp(12px,3vw,40px) calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;background:color-mix(in srgb,var(--paper) 90%,transparent);border-top:1.5px solid var(--rule);z-index:8}
+.nav button{font-family:var(--f-display);font-weight:800;font-size:15px;border:1.5px solid var(--ink);background:var(--card);padding:8px 14px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.dots{display:flex;gap:6px;flex-wrap:wrap;flex:1;justify-content:center}
+.dot{width:12px;height:12px;border:1.5px solid var(--ink);background:transparent;padding:0;cursor:pointer}
+.dot.on{background:var(--blue);border-color:var(--blue)}
+.count{font-family:var(--f-mono);font-size:13px;color:var(--ink-2);min-width:4.5em;text-align:right}
+@media (max-width:760px){.explorer{grid-template-columns:1fr}.alist{flex-direction:row;flex-wrap:wrap}.abtn{font-size:.8em}}
+@media (max-width:640px){.dots{display:none}.side{grid-template-columns:1fr}.nav{justify-content:space-between}.top .sec{display:none}}
+</style>
+
+<header class="top">
+  <span class="brand">Áreas y asignaturas según el PEI · Colegio Loyola</span>
+  <span class="sec" id="secName"></span>
+  <button class="tbtn" id="btnToc" aria-haspopup="dialog">Índice</button>
+  <button class="tbtn" id="btnGlo" aria-haspopup="dialog">Glosario</button>
+</header>
+<div class="bar" id="bar"></div>
+
+<main class="deck" id="deck">
+
+<section class="slide cover" data-name="Inicio">
+  <span class="kicker">I. E. Colegio Loyola para la Ciencia y la Innovación · Gestión Académica · 7 de octubre de 2026</span>
+  <h1>Áreas y asignaturas <em>según el PEI</em></h1>
+  <p class="lead">Qué dice hoy el PEI sobre las áreas y las asignaturas, qué dicen los planes de área y qué hay que corregir. Es el primer paso para actualizar el plan de estudios del PEI.</p>
+  <div class="howto">
+    <div><b>Avance y retroceda</b>Con las flechas del teclado, con los botones de abajo o deslizando el dedo.</div>
+    <div><b>Palabras subrayadas</b>Tóquelas para ver qué significan, como <button class="term" data-t="area">área</button> o <button class="term" data-t="malla">malla curricular</button>.</div>
+    <div><b>Índice y glosario</b>Arriba a la derecha. Desde el índice salta a cualquier parte.</div>
+  </div>
+  <button class="cta" data-goto="1">Empezar: la historia en 1 minuto →</button>
+</section>
+
+<section class="slide" data-name="En 1 minuto">
+  <span class="kicker">La historia en 1 minuto</span>
+  <h2>Cuatro pasos para entender <em>todo el trabajo</em></h2>
+  <p class="lead">Toque cualquier paso para ir directo a su detalle.</p>
+  <ol class="story">
+    <li><button data-goto="3"><h3>Qué pide la norma</h3><p>El plan de estudios debe decir qué áreas hay y qué asignaturas tiene cada una.</p><span class="go">Ver la norma →</span></button></li>
+    <li><button data-goto="5"><h3>Qué encontramos en el PEI</h3><p>Nombra 12 áreas, pero no tiene la tabla oficial del plan de estudios.</p><span class="go">Ver el hallazgo →</span></button></li>
+    <li><button data-goto="10"><h3>Qué encontramos en los planes</h3><p>11 de 12 áreas tienen plan, y algunos no dicen lo mismo que el PEI.</p><span class="go">Ver la comparación →</span></button></li>
+    <li><button data-goto="11"><h3>Qué hay que hacer</h3><p>13 correcciones con su página exacta y 6 decisiones del Consejo Académico.</p><span class="go">Ver las correcciones →</span></button></li>
+  </ol>
+</section>
+
+<section class="slide" data-name="Glosario">
+  <span class="kicker">Antes de empezar</span>
+  <h2>Seis palabras que <em>conviene tener claras</em></h2>
+  <p class="lead">Toque cada tarjeta para ver un ejemplo del Colegio Loyola.</p>
+  <div class="gloss" id="glossGrid"></div>
+</section>
+
+<section class="slide" data-name="La norma">
+  <span class="kicker">Paso 1 · Qué pide la norma</span>
+  <h2>El plan de estudios debe tener <em>áreas y asignaturas claras</em></h2>
+  <div class="quote"><p>«El plan de estudios es el esquema estructurado de las áreas obligatorias y fundamentales y de áreas optativas con sus respectivas asignaturas».</p><span class="pg">Anexo E, p. 103 (Ley 115, art. 79)</span></div>
+  <div class="quote"><p>«La decisión de tener asignaturas o áreas depende de los intereses que la institución tenga […]. Sin embargo esta es una decisión que puede cambiar, en el marco de un proceso de actualización del PEI».</p><span class="pg">Anexo E, p. 109</span></div>
+  <div class="quote"><p>«Si un área se compone de asignaturas, la malla curricular también deberá especificarse por asignaturas».</p><span class="pg">Anexo E, p. 110</span></div>
+  <div class="help"><b>En palabras simples:</b> cada colegio decide si un área se enseña completa o dividida en asignaturas, pero debe decirlo en el PEI y sus mallas deben coincidir con esa decisión.</div>
+</section>
+
+<section class="slide" data-name="Documentos base">
+  <span class="kicker">De dónde sale la información</span>
+  <h2>Solo con la carpeta <em>Documentos base</em></h2>
+  <p class="lead">Así cualquier docente abre el mismo archivo y comprueba cada dato.</p>
+  <div class="grid">
+    <div class="tile info"><span class="n">PEI</span><h3>PEILOYOLA2023.pdf</h3><p>Versión adoptada, agosto de 2023, 154 páginas. Las copias en edición conservan el mismo texto.</p></div>
+    <div class="tile info"><span class="n">Norma</span><h3>Anexo E, Aspecto 05</h3><p>Páginas 103 a 116.</p></div>
+    <div class="tile info"><span class="n">Planes de área</span><h3>Carpeta MALLAS</h3><p>10 planes en PDF y Educación Religiosa en Word.</p></div>
+  </div>
+  <div class="finder">
+    <label for="pgIn">¿Cómo encuentro una página del PEI?</label>
+    <span>Página citada:</span><input id="pgIn" type="number" min="1" max="153" value="98" inputmode="numeric">
+    <output id="pgOut" for="pgIn"></output>
+  </div>
+  <p class="src">Las páginas del PEI son las impresas en el documento; en el visor del PDF son una más. En los planes se usa la página del visor. <a href="https://drive.google.com/drive/folders/1ETs8t6CfR-fZV3N_bK3OwPzFnlK2Bota" style="color:var(--blue)">Abrir la carpeta Documentos base</a></p>
+</section>
+
+<section class="slide" data-name="Hallazgo central">
+  <span class="kicker">Paso 2 · Qué encontramos en el PEI</span>
+  <h2>El PEI anuncia el plan de estudios, pero <em>no trae la tabla</em></h2>
+  <div class="quote"><p>«La Institución Educativa Colegio Loyola para la Ciencia y la Innovación, adoptó el plan de estudios para el año 2022, de la siguiente manera:»</p><span class="pg">PEI, Capítulo 5, pp. 98 y 99 · lo que sigue es el título del SIEE, no la tabla</span></div>
+  <div class="big">
+    <div class="stat"><b>12</b><span>áreas nombradas en distintos capítulos</span></div>
+    <div class="stat"><b>2</b><span>con asignaturas: Investigación Escolar (expresa, p. 83) y Humanidades (pp. 34 y 92)</span></div>
+    <div class="stat"><b>0</b><span>áreas declaradas como <button class="term" data-t="optativa">optativas</button></span></div>
+  </div>
+</section>
+
+<section class="slide" data-name="Las 12 áreas">
+  <span class="kicker">Paso 2 · Qué encontramos en el PEI</span>
+  <h2>Las 12 áreas del PEI 2023</h2>
+  <p class="lead"><button class="term" data-t="integrada">«Área integrada»</button> no es un error: la ley permite enseñar un área completa. Lo que falta es una tabla oficial que lo diga. Toque un área para ver su ficha.</p>
+  <div class="legend"><span><i style="background:var(--blue)"></i>Con asignaturas nombradas</span><span><i style="background:var(--rule)"></i>Área integrada</span></div>
+  <div class="grid" id="areasGrid"></div>
+</section>
+
+<section class="slide" data-name="Explorador por área">
+  <span class="kicker">Explorador</span>
+  <h2>La ficha de <em>cada área</em></h2>
+  <p class="lead">Elija un área: verá qué dice el PEI, qué dice su plan, si coinciden y qué hay que corregir.</p>
+  <div class="explorer">
+    <div class="alist" id="alist" role="group" aria-label="Áreas"></div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="slide" data-name="Frente a la ley">
+  <span class="kicker">Paso 2 · Frente a la norma</span>
+  <h2>Están todas las áreas de la ley, pero <em>tres no quedan claras</em></h2>
+  <div class="legend"><span><i style="background:var(--ok)"></i>Coincide</span><span><i style="background:var(--warn)"></i>Por aclarar</span><span><i style="background:var(--blue)"></i>Área propia del colegio</span></div>
+  <div class="grid" id="leyGrid"></div>
+  <p class="src">Áreas obligatorias: Ley 115, arts. 23 y 31, citados en el Anexo E, pp. 103 y 104.</p>
+</section>
+
+<section class="slide" data-name="Contradicciones">
+  <span class="kicker">Paso 2 · Dentro del mismo PEI</span>
+  <h2>Cinco pasajes que <em>se contradicen</em></h2>
+  <div class="vs" id="vsGrid"></div>
+</section>
+
+<section class="slide" data-name="PEI frente a planes">
+  <span class="kicker">Paso 3 · Qué encontramos en los planes</span>
+  <h2>11 de 12 áreas tienen plan; <em>falta Ciencias Políticas y Económicas</em></h2>
+  <p class="lead">Cuatro planes ya dividen el área en asignaturas: Ciencias Naturales, Humanidades, Tecnología e Investigación Escolar. Solo Humanidades tiene una malla por asignatura. Toque un área para ver su ficha.</p>
+  <div class="legend"><span><i style="background:var(--ok)"></i>Coinciden</span><span><i style="background:var(--warn)"></i>Hay diferencias</span><span><i style="background:var(--bad)"></i>Falta el plan</span></div>
+  <div class="grid" id="cmpGrid"></div>
+</section>
+
+<section class="slide" data-name="Correcciones">
+  <span class="kicker">Paso 4 · Qué hay que hacer</span>
+  <h2>13 correcciones, <em>con su lugar exacto</em></h2>
+  <div class="filters" role="group" aria-label="Filtrar por documento">
+    <span class="lbl">Dónde:</span>
+    <button class="chip" data-w="all" aria-pressed="true">Todas</button>
+    <button class="chip" data-w="pei" aria-pressed="false">En el PEI</button>
+    <button class="chip" data-w="plan" aria-pressed="false">En los planes</button>
+  </div>
+  <div class="filters" role="group" aria-label="Filtrar por momento">
+    <span class="lbl">Cuándo:</span>
+    <button class="chip" data-c="all" aria-pressed="true">Siempre</button>
+    <button class="chip" data-c="ya" aria-pressed="false">De inmediato</button>
+    <button class="chip" data-c="dec" aria-pressed="false">Tras decisión</button>
+    <label class="lbl" for="areaSel" style="margin-left:8px">Área:</label>
+    <select class="chip" id="areaSel"><option value="">Todas las áreas</option></select>
+    <span class="count2" id="corrCount"></span>
+  </div>
+  <div class="cards" id="corrCards"></div>
+</section>
+
+<section class="slide" data-name="Decisiones">
+  <span class="kicker">Paso 4 · Consejo Académico</span>
+  <h2>Seis decisiones para tener <em>la lista oficial</em></h2>
+  <ol class="dec" id="decList"></ol>
+  <div class="help"><b>Cómo se decide:</b> el Consejo Académico propone, recogiendo lo que plantean las áreas, y el Consejo Directivo adopta. Si un área cambia a asignaturas, rige desde el año lectivo siguiente (Anexo E, pp. 109 y 110).</div>
+</section>
+
+<section class="slide" data-name="Compruebe lo aprendido">
+  <span class="kicker">Para cerrar</span>
+  <h2>Compruebe <em>lo que aprendió</em></h2>
+  <p class="lead">Cinco preguntas rápidas. Toque una respuesta para ver si es correcta y por qué.</p>
+  <div class="quiz" id="quiz"></div>
+  <span class="score" id="score"></span>
+</section>
+
+<section class="slide" data-name="Próximos pasos">
+  <span class="kicker">Para cerrar</span>
+  <h2>Próximos pasos</h2>
+  <ol class="dec">
+    <li><b>Tomar las seis decisiones</b> y redactar la tabla oficial del Capítulo 5 del PEI.</li>
+    <li><b>Correcciones inmediatas:</b> cada jefe de área ajusta las horas anuales, «Media Vocacional» y el rótulo de pandemia (correcciones 11 a 13).</li>
+    <li><b>Paso 2 del análisis:</b> revisar el contenido de las mallas frente al Aspecto 5: objetivos por grado, metodología, criterios de evaluación, lineamientos y proyectos pedagógicos.</li>
+  </ol>
+  <p class="src">Documento formal completo, en norma APA 7: «Áreas y asignaturas según el PEI – Paso 1».</p>
+</section>
+
+</main>
+
+<nav class="nav" aria-label="Navegación de diapositivas">
+  <button id="prev">← Anterior</button>
+  <div class="dots" id="dots"></div>
+  <span class="count" id="count"></span>
+  <button id="next">Siguiente →</button>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="panel" id="tocPanel" role="dialog" aria-label="Índice" hidden><button class="tbtn x" data-close>Cerrar</button><h2>Índice</h2><ol class="toc" id="toc"></ol></aside>
+<aside class="panel" id="gloPanel" role="dialog" aria-label="Glosario" hidden><button class="tbtn x" data-close>Cerrar</button><h2>Glosario</h2><div class="glist" id="glist"></div></aside>
+<div class="pop" id="pop" hidden></div>
+
+<script>
+const D={"areas": [["1", "Ciencias Naturales y Educación Ambiental", "Área integrada: el PEI no le nombra asignaturas"], ["2", "Ciencias Sociales", "Área integrada: el PEI no le nombra asignaturas"], ["3", "Ciencias Políticas y Económicas", "Área integrada: el PEI no le nombra asignaturas"], ["4", "Filosofía", "Área integrada: el PEI no le nombra asignaturas"], ["5", "Matemáticas", "Área integrada: el PEI no le nombra asignaturas"], ["6", "Humanidades", "Con asignaturas: Lengua Castellana e Inglés (el PEI las llama «los dos elementos que la componen» y también asignaturas, pp. 34 y 92)"], ["7", "Ética y Valores", "Área integrada: el PEI no le nombra asignaturas"], ["8", "Educación Física", "Área integrada: el PEI no le nombra asignaturas"], ["9", "Educación Artística", "Área integrada: el PEI no le nombra asignaturas"], ["10", "Educación Religiosa", "Área integrada: el PEI no le nombra asignaturas (solo aparece en la relación de docentes)"], ["11", "Tecnología y Emprendimiento", "Área integrada: el PEI no le nombra asignaturas"], ["12", "Investigación Escolar", "Con asignaturas: Investigación y Tecnoacademia (declaradas de forma expresa, p. 83)"]], "peiEvidence": [["Ciencias Naturales y Educación Ambiental", "«Ciencias Naturales», p. 40: «Los docentes de Ciencias Naturales y educación ambiental»", "«Área de ciencias naturales: 5»", "No nombra Biología, Química ni Física"], ["Ciencias Sociales", "«Ciencias Sociales», p. 38", "«Área de ciencias sociales: 2»", "—"], ["Ciencias Políticas y Económicas", "«Ciencias Políticas», p. 40", "«Las áreas de Filosofía, y Ciencias Políticas y Económicas no cuentan con docente nombrado»", "Cap. 8, p. 123: «Ciencias Sociales y/o en Ciencias Políticas»"], ["Filosofía", "«Filosofía», p. 36", "Sin docente nombrado (misma frase)", "—"], ["Matemáticas", "«Matemáticas», p. 32", "«Área de matemáticas: 3»", "No nombra Geometría, Estadística ni Educación Financiera"], ["Humanidades", "«Humanidades», p. 34: «los dos elementos que la componen (el de la Lengua Castellana y el del idioma extranjero - Inglés)» y «ejercicios comprensivos entre asignaturas, al interior del área»", "«Área de humanidades, lengua castellana: 4» y «Área de humanidades, lengua extranjera: 3»", "Cap. 4, p. 92: «la asignatura de idiomas extranjeros (como parte del área de Humanidades)»"], ["Inglés", "«Inglés», p. 35: «el área de Inglés cuenta con 3 docentes especializados»; 3 h semanales en básica y 4 en media", "Contado dentro de Humanidades", "Ver la fila anterior"], ["Ética y Valores", "«Ética y Valores», p. 37", "«Área de ética y valores: 1 docente»", "Articula la Cátedra de la Paz (p. 37)"], ["Educación Física", "«Educación Física», p. 37", "«Área de educación física y deportes: 2»", "—"], ["Educación Artística", "«Educación Artística», p. 42", "«Área de educación artística: 1 docente»", "—"], ["Educación Religiosa", "No tiene apartado", "«Área de educación religiosa: 1 docente»", "Se nombra de paso en Ciencias Sociales, p. 38"], ["Tecnología y Emprendimiento", "«Tecnología y Emprendimiento», p. 32", "«Área de tecnología: 3 docentes»", "Cap. 6, p. 105: la Cátedra de emprendimiento «se articula con el área de Tecnología»"], ["Investigación Escolar", "«Investigación Escolar», p. 33: «se imparte de 6° a 9°, ya que en 10° y 11° es el SENA (Tecnoacademia), quien acompaña»", "No aparece", "Cap. 4, p. 83: «el área de Investigación Escolar, con sus dos asignaturas (Investigación y Tecnoacademia)». Cap. 4, pp. 94 y 95: Tecnolab con «una asignación académica de 3 periodos de clase» de 6° a 8° y de 9° a 11°"]], "ley": [["Ciencias naturales y educación ambiental", "Ciencias Naturales y Educación Ambiental", "ok", "Coincide"], ["Ciencias sociales, historia, geografía, constitución política y democracia", "Ciencias Sociales", "ok", "Coincide"], ["Educación artística", "Educación Artística", "ok", "Coincide"], ["Educación ética y en valores humanos", "Ética y Valores", "ok", "Coincide"], ["Educación física, recreación y deportes", "Educación Física", "ok", "Coincide"], ["Educación religiosa", "Educación Religiosa", "warn", "Solo en la relación de docentes; sin apartado en el Capítulo 2"], ["Humanidades, lengua castellana e idiomas extranjeros", "Humanidades (Lengua Castellana e Inglés)", "warn", "El PEI también trata Inglés como área aparte"], ["Matemáticas", "Matemáticas", "ok", "Coincide"], ["Tecnología e informática", "Tecnología y Emprendimiento", "ok", "Coincide; el PEI le suma la Cátedra de emprendimiento"], ["Ciencias económicas y políticas (media)", "Ciencias Políticas / Ciencias Políticas y Económicas", "warn", "El nombre cambia entre capítulos"], ["Filosofía (media)", "Filosofía", "ok", "Coincide"], ["— (área propia del colegio)", "Investigación Escolar", "info", "El PEI no dice si es optativa"]], "contradicciones": [["Inglés", "Es un «elemento» de Humanidades (p. 34) y «la asignatura de idiomas extranjeros (como parte del área de Humanidades)» (p. 92)", "«el área de Inglés cuenta con 3 docentes» (p. 35)"], ["Grados de Investigación y Tecnoacademia", "Investigación «se imparte de 6° a 9°, ya que en 10° y 11° es el SENA (Tecnoacademia)» (p. 33)", "Tecnolab tiene 3 periodos de clase de 6° a 8° y de 9° a 11° (pp. 94 y 95)"], ["Nombre del área de la media", "«Ciencias Políticas» (pp. 40 y 123)", "«Ciencias Políticas y Económicas» (p. 140)"], ["Educación Religiosa", "Tiene docente asignado (p. 140)", "No tiene apartado en el estado de las áreas (pp. 31 a 42)"], ["Optativas", "El Capítulo 5 permite «áreas optativas (hasta el 20%)» (p. 97)", "Ningún capítulo dice cuáles son"]], "comparacion": [["Ciencias Naturales y Educación Ambiental", "Cap. 2, p. 40 y Cap. 11, p. 139. No nombra asignaturas", "Plan 2025, p. 2: «Área: Ciencias Naturales»; «Entorno vivo: Biología, Entorno Físico: Procesos físicos y químicos»; 6° a 9°: Biología 3 h, Química 1 h, Física 1 h; 10° y 11°: Biología 1 h, Química 3 h, Física 3 h. Mallas pp. 41 a 132: una sola malla por grado para toda el área", "warn", "El plan reparte las horas en tres asignaturas, pero ni el PEI las nombra ni las mallas las separan"], ["Ciencias Sociales", "Cap. 2, p. 38 y Cap. 11, p. 140", "Plan 2021, p. 2: «Ciencias Sociales (Historia, geografía, Constitución Política y Democracia)»; 4 h de 6° a 9° y 1 h en 10° y 11°. Mallas pp. 29 a 70, una por grado, rotuladas «ajustadas […] en el contexto de la pandemia» (p. 29)", "ok", "Coinciden"], ["Ciencias Políticas y Económicas", "Cap. 2, p. 40 y Cap. 11, p. 140", "No hay plan en la carpeta. El de Sociales la nombra como área aparte, «Economía y Política» (p. 8)", "bad", "Falta el plan"], ["Filosofía", "Cap. 2, p. 36 y Cap. 11, p. 140", "Plan 2026, p. 2: «Área: Filosofía», 10° y 11°, 120 minutos. Mallas: 10° p. 40 y 11° p. 44", "ok", "Coinciden"], ["Matemáticas", "Cap. 2, p. 32 y Cap. 11, p. 139", "Plan 2026, p. 2: «Área: Matemáticas», 6° a 11°, 4 horas. Mallas pp. 35 a 106, una por grado", "ok", "Coinciden; ninguno divide el área"], ["Humanidades", "Cap. 2, pp. 34 y 35 (Inglés como «elemento» y como «área»); Cap. 4, p. 92; Cap. 11, p. 140", "Plan 2026, p. 2: «Área: Humanidades: Lengua Castellana e Idioma Extranjero Inglés»; básica 7 h (4 + 3) y media 8 h (4 + 4). Mallas separadas: 13.1 Lengua Castellana, pp. 41 a 89, y 13.2 Idioma Extranjero Inglés, pp. 90 a 144", "warn", "El plan las trata como asignaturas; el PEI también llama «área» a Inglés (p. 35). Las horas de Inglés coinciden (3 y 4)"], ["Ética y Valores", "Cap. 2, p. 37 y Cap. 11, p. 140", "Plan 2025, p. 2: «Área: Ética y Valores Humanos», 60 minutos. Mallas pp. 27 a 51, una por grado", "ok", "Coinciden (cambia solo el nombre)"], ["Educación Física", "Cap. 2, p. 37; Cap. 11, p. 140 («educación física y deportes»)", "Plan 2026, p. 2: «Educación Física, Recreación y Deporte (EFRD)», 100 minutos, «Media Vocacional». Mallas desde la p. 33", "ok", "Coinciden (cambia el nombre); el plan dice «Media Vocacional» y el colegio ofrece media académica"], ["Educación Artística", "Cap. 2, p. 42 y Cap. 11, p. 140", "Plan 2026, p. 3: «Área: Ed. Artística y cultural», 110 minutos, «Media Vocacional». Mallas pp. 16 a 68, por grado y período", "ok", "Coinciden (cambia el nombre); mismo detalle de «Media Vocacional»"], ["Educación Religiosa", "Solo Cap. 11, p. 140", "Plan 2026 (Word), sección «Identificación»: «Área: Educación Religiosa Escolar», 6° a 11°, 1 hora. Mallas en el numeral 9", "warn", "El plan existe y el PEI casi no la nombra; falta el PDF"], ["Tecnología y Emprendimiento", "Cap. 2, p. 32; Cap. 11, p. 140 («tecnología»); Cap. 6, p. 105 (Cátedra de emprendimiento)", "Plan 2025, p. 2: «TECNOLOGÍA E INFORMÁTICA Y EMPRENDIMIENTO»; p. 3: «En el año de 2019 se integra la asignatura de Emprendimiento al área»; 3 h de 6° a 9° y 2 h en 10° y 11°. Mallas pp. 19 a 78, con dos títulos distintos: «Tecnología e Informática» (6°, 10° y 11°) y «Tecnología e Informática y Emprendimiento» (7°, 8° y 9°)", "warn", "El plan llama «asignatura» a Emprendimiento; el PEI la llama «Cátedra». El nombre del área cambia entre documentos"], ["Investigación Escolar", "Cap. 2, p. 33 (Investigación de 6° a 9°; SENA en 10° y 11°); Cap. 4, p. 83 (dos asignaturas) y pp. 94 y 95 (Tecnolab de 6° a 11°)", "Plan 2024, p. 2: «Asignaturas: Investigación y Tecnoacademia», cada una 3 h de 6° a 11°. Mallas pp. 33 a 71: una por grado, con campos de Tecnoacademia dentro (en 6°, «Docentes […] Tecnoacademia:» y «Competencias Tecnoacademia:» están vacíos, p. 33)", "warn", "Coinciden en las dos asignaturas, no en los grados; Tecnoacademia no tiene malla propia"]], "correcciones": [["1", "Incluir la tabla oficial de áreas, asignaturas e intensidad por grado", "Cap. 5, pp. 98 y 99, después de «adoptó el plan de estudios […] de la siguiente manera:»", "—", "Esquema de áreas «con sus respectivas asignaturas» (p. 103); distribución del tiempo (p. 111)", "dec"], ["2", "Decidir si Ciencias Naturales tiene asignaturas (Biología, Química, Física)", "Cap. 5, tabla nueva; Cap. 2, p. 40", "Identificación, p. 2; si se dividen, mallas por asignatura en las pp. 41 a 132", "La malla va por asignatura si el área las tiene (p. 110)", "dec"], ["3", "Definir Inglés como asignatura de Humanidades", "Cap. 2, p. 35 (cambiar «el área de Inglés»); Cap. 5, tabla nueva", "Ya lo hace (p. 2 y mallas 13.1 y 13.2)", "Humanidades, lengua castellana e idiomas extranjeros como un área (p. 103)", "dec"], ["4", "Definir Emprendimiento: asignatura de Tecnología o cátedra", "Cap. 2, p. 32; Cap. 6, p. 105; Cap. 5, tabla nueva", "p. 3 («se integra la asignatura de Emprendimiento») y títulos de las mallas, pp. 19, 29, 42, 50, 57 y 69", "Decisión del colegio sobre asignaturas o áreas (p. 109)", "dec"], ["5", "Unificar el nombre del área de Tecnología", "Cap. 2, p. 32 («Tecnología y Emprendimiento») y Cap. 11, p. 140 («tecnología»)", "p. 2 y títulos de las mallas (dos nombres distintos según el grado)", "Lista de áreas de la ley: «Tecnología e informática» (p. 103)", "dec"], ["6", "Investigación Escolar sin Tecnoacademia", "Cap. 2, p. 33; Cap. 4, p. 83 y pp. 94 y 95; Cap. 10, p. 137 (convenio con el SENA «hasta el 31 de diciembre de 2029»)", "p. 2 (asignaturas e intensidad), p. 6 (rotación por las líneas del SENA) y campos de Tecnoacademia en las mallas, pp. 33 a 71", "Plan en sintonía con la vida diaria (p. 110); malla por asignatura (p. 110)", "dec"], ["7", "Unificar los grados de Investigación", "Cap. 2, p. 33 (6° a 9°) frente a Cap. 4, pp. 94 y 95 (6° a 11°)", "El plan dice 6° a 11° (p. 2)", "Plan en sintonía con la vida diaria (p. 110)", "dec"], ["8", "Unificar el nombre de Ciencias Políticas y Económicas y conseguir su plan", "Cap. 2, p. 40 y Cap. 11, p. 140", "No hay plan en la carpeta MALLAS; Sociales la nombra en la p. 8", "Áreas de la media: «las ciencias económicas, políticas y la filosofía» (p. 104)", "dec"], ["9", "Incluir Educación Religiosa con las demás áreas", "Cap. 5, tabla nueva; Cap. 2, estado de las áreas (pp. 31 a 42)", "Pasar el plan 2026 a PDF y subirlo a MALLAS/PDF", "Educación religiosa entre las áreas obligatorias (p. 103)", "dec"], ["10", "Decir cuáles áreas son optativas", "Cap. 5, p. 97 («hasta el 20%») y tabla nueva", "—", "Optativas «sin sobrepasar el veinte por ciento de las áreas» (p. 108)", "dec"], ["11", "Corregir las horas anuales", "—", "Humanidades, p. 2 (3.360 y 1.280 horas); Investigación Escolar, p. 2 (240 y 160 horas)", "Distribución del tiempo (p. 111)", "ya"], ["12", "Cambiar «Media Vocacional» por media académica", "—", "Educación Física, p. 2; Artística, p. 3", "— (ajuste de redacción)", "ya"], ["13", "Actualizar el rótulo de las mallas de Sociales", "—", "p. 29: «ajustadas […] en el contexto de la pandemia»", "Plan en sintonía con la vida diaria (p. 110)", "ya"]], "decisiones": [["Inglés", "Confirmar que es asignatura de Humanidades, junto con Lengua Castellana, y corregir el apartado «Inglés» del Capítulo 2."], ["Investigación Escolar", "El PEI registra el convenio con el SENA vigente «hasta el 31 de diciembre de 2029» (Cap. 10, p. 137), mientras el plan ECI-Lab 2026, que no está en la carpeta base, indica que terminó en 2025. Confirmar el estado del convenio, decidir qué reemplaza a Tecnoacademia y si el área es optativa."], ["Áreas optativas", "Decir cuáles son y comprobar que no pasan del 20 % de las áreas (Anexo E, p. 108)."], ["Ciencias Políticas y Económicas", "Fijar un solo nombre; la ley habla de «las ciencias económicas, políticas y la filosofía» para la media (Anexo E, p. 104)."], ["Educación Religiosa", "Incluirla en la tabla del plan de estudios con las demás áreas obligatorias."], ["Ciencias Naturales", "Decidir si se divide en Biología, Química y Física, como reparte las horas su plan, o se trabaja completa. El PEI no la divide; si se divide, la malla debe ir por asignatura (Anexo E, p. 110)."]], "links": {"carpeta": "https://drive.google.com/drive/folders/1ETs8t6CfR-fZV3N_bK3OwPzFnlK2Bota", "pei": "https://drive.google.com/file/d/1LymudsBpN_frL0-EXDxkLNT9-2MqW7mz/view", "anexo": "https://drive.google.com/file/d/1GMC_Mpjife6R8XZySOwTbeT-cfy2hs5F/view", "mallas": "https://drive.google.com/drive/folders/1Rrje6ck72vL7Pkze8-IUPzZEEIWYrngi"}, "areasX": [{"name": "Ciencias Naturales y Educación Ambiental", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Ciencias Naturales y Educación Ambiental", "cap2": "«Ciencias Naturales», p. 40: «Los docentes de Ciencias Naturales y educación ambiental»", "cap11": "«Área de ciencias naturales: 5»", "otras": "No nombra Biología, Química ni Física"}], "peiRef": "Cap. 2, p. 40 y Cap. 11, p. 139. No nombra asignaturas", "plan": "Plan 2025, p. 2: «Área: Ciencias Naturales»; «Entorno vivo: Biología, Entorno Físico: Procesos físicos y químicos»; 6° a 9°: Biología 3 h, Química 1 h, Física 1 h; 10° y 11°: Biología 1 h, Química 3 h, Física 3 h. Mallas pp. 41 a 132: una sola malla por grado para toda el área", "st": "warn", "stText": "El plan reparte las horas en tres asignaturas, pero ni el PEI las nombra ni las mallas las separan", "corr": ["1", "2"], "dec": "Ciencias Naturales"}, {"name": "Ciencias Sociales", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Ciencias Sociales", "cap2": "«Ciencias Sociales», p. 38", "cap11": "«Área de ciencias sociales: 2»", "otras": "—"}], "peiRef": "Cap. 2, p. 38 y Cap. 11, p. 140", "plan": "Plan 2021, p. 2: «Ciencias Sociales (Historia, geografía, Constitución Política y Democracia)»; 4 h de 6° a 9° y 1 h en 10° y 11°. Mallas pp. 29 a 70, una por grado, rotuladas «ajustadas […] en el contexto de la pandemia» (p. 29)", "st": "ok", "stText": "Coinciden", "corr": ["1", "13"], "dec": null}, {"name": "Ciencias Políticas y Económicas", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Ciencias Políticas y Económicas", "cap2": "«Ciencias Políticas», p. 40", "cap11": "«Las áreas de Filosofía, y Ciencias Políticas y Económicas no cuentan con docente nombrado»", "otras": "Cap. 8, p. 123: «Ciencias Sociales y/o en Ciencias Políticas»"}], "peiRef": "Cap. 2, p. 40 y Cap. 11, p. 140", "plan": "No hay plan en la carpeta. El de Sociales la nombra como área aparte, «Economía y Política» (p. 8)", "st": "bad", "stText": "Falta el plan", "corr": ["1", "8"], "dec": "Ciencias Políticas y Económicas"}, {"name": "Filosofía", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Filosofía", "cap2": "«Filosofía», p. 36", "cap11": "Sin docente nombrado (misma frase)", "otras": "—"}], "peiRef": "Cap. 2, p. 36 y Cap. 11, p. 140", "plan": "Plan 2026, p. 2: «Área: Filosofía», 10° y 11°, 120 minutos. Mallas: 10° p. 40 y 11° p. 44", "st": "ok", "stText": "Coinciden", "corr": ["1"], "dec": null}, {"name": "Matemáticas", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Matemáticas", "cap2": "«Matemáticas», p. 32", "cap11": "«Área de matemáticas: 3»", "otras": "No nombra Geometría, Estadística ni Educación Financiera"}], "peiRef": "Cap. 2, p. 32 y Cap. 11, p. 139", "plan": "Plan 2026, p. 2: «Área: Matemáticas», 6° a 11°, 4 horas. Mallas pp. 35 a 106, una por grado", "st": "ok", "stText": "Coinciden; ninguno divide el área", "corr": ["1"], "dec": null}, {"name": "Humanidades", "how": "Con asignaturas: Lengua Castellana e Inglés (el PEI las llama «los dos elementos que la componen» y también asignaturas, pp. 34 y 92)", "pei": [{"area": "Humanidades", "cap2": "«Humanidades», p. 34: «los dos elementos que la componen (el de la Lengua Castellana y el del idioma extranjero - Inglés)» y «ejercicios comprensivos entre asignaturas, al interior del área»", "cap11": "«Área de humanidades, lengua castellana: 4» y «Área de humanidades, lengua extranjera: 3»", "otras": "Cap. 4, p. 92: «la asignatura de idiomas extranjeros (como parte del área de Humanidades)»"}, {"area": "Inglés", "cap2": "«Inglés», p. 35: «el área de Inglés cuenta con 3 docentes especializados»; 3 h semanales en básica y 4 en media", "cap11": "Contado dentro de Humanidades", "otras": "Ver la fila anterior"}], "peiRef": "Cap. 2, pp. 34 y 35 (Inglés como «elemento» y como «área»); Cap. 4, p. 92; Cap. 11, p. 140", "plan": "Plan 2026, p. 2: «Área: Humanidades: Lengua Castellana e Idioma Extranjero Inglés»; básica 7 h (4 + 3) y media 8 h (4 + 4). Mallas separadas: 13.1 Lengua Castellana, pp. 41 a 89, y 13.2 Idioma Extranjero Inglés, pp. 90 a 144", "st": "warn", "stText": "El plan las trata como asignaturas; el PEI también llama «área» a Inglés (p. 35). Las horas de Inglés coinciden (3 y 4)", "corr": ["1", "3", "11"], "dec": "Inglés"}, {"name": "Ética y Valores", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Ética y Valores", "cap2": "«Ética y Valores», p. 37", "cap11": "«Área de ética y valores: 1 docente»", "otras": "Articula la Cátedra de la Paz (p. 37)"}], "peiRef": "Cap. 2, p. 37 y Cap. 11, p. 140", "plan": "Plan 2025, p. 2: «Área: Ética y Valores Humanos», 60 minutos. Mallas pp. 27 a 51, una por grado", "st": "ok", "stText": "Coinciden (cambia solo el nombre)", "corr": ["1"], "dec": null}, {"name": "Educación Física", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Educación Física", "cap2": "«Educación Física», p. 37", "cap11": "«Área de educación física y deportes: 2»", "otras": "—"}], "peiRef": "Cap. 2, p. 37; Cap. 11, p. 140 («educación física y deportes»)", "plan": "Plan 2026, p. 2: «Educación Física, Recreación y Deporte (EFRD)», 100 minutos, «Media Vocacional». Mallas desde la p. 33", "st": "ok", "stText": "Coinciden (cambia el nombre); el plan dice «Media Vocacional» y el colegio ofrece media académica", "corr": ["1", "12"], "dec": null}, {"name": "Educación Artística", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Educación Artística", "cap2": "«Educación Artística», p. 42", "cap11": "«Área de educación artística: 1 docente»", "otras": "—"}], "peiRef": "Cap. 2, p. 42 y Cap. 11, p. 140", "plan": "Plan 2026, p. 3: «Área: Ed. Artística y cultural», 110 minutos, «Media Vocacional». Mallas pp. 16 a 68, por grado y período", "st": "ok", "stText": "Coinciden (cambia el nombre); mismo detalle de «Media Vocacional»", "corr": ["1", "12"], "dec": null}, {"name": "Educación Religiosa", "how": "Área integrada: el PEI no le nombra asignaturas (solo aparece en la relación de docentes)", "pei": [{"area": "Educación Religiosa", "cap2": "No tiene apartado", "cap11": "«Área de educación religiosa: 1 docente»", "otras": "Se nombra de paso en Ciencias Sociales, p. 38"}], "peiRef": "Solo Cap. 11, p. 140", "plan": "Plan 2026 (Word), sección «Identificación»: «Área: Educación Religiosa Escolar», 6° a 11°, 1 hora. Mallas en el numeral 9", "st": "warn", "stText": "El plan existe y el PEI casi no la nombra; falta el PDF", "corr": ["1", "9"], "dec": "Educación Religiosa"}, {"name": "Tecnología y Emprendimiento", "how": "Área integrada: el PEI no le nombra asignaturas", "pei": [{"area": "Tecnología y Emprendimiento", "cap2": "«Tecnología y Emprendimiento», p. 32", "cap11": "«Área de tecnología: 3 docentes»", "otras": "Cap. 6, p. 105: la Cátedra de emprendimiento «se articula con el área de Tecnología»"}], "peiRef": "Cap. 2, p. 32; Cap. 11, p. 140 («tecnología»); Cap. 6, p. 105 (Cátedra de emprendimiento)", "plan": "Plan 2025, p. 2: «TECNOLOGÍA E INFORMÁTICA Y EMPRENDIMIENTO»; p. 3: «En el año de 2019 se integra la asignatura de Emprendimiento al área»; 3 h de 6° a 9° y 2 h en 10° y 11°. Mallas pp. 19 a 78, con dos títulos distintos: «Tecnología e Informática» (6°, 10° y 11°) y «Tecnología e Informática y Emprendimiento» (7°, 8° y 9°)", "st": "warn", "stText": "El plan llama «asignatura» a Emprendimiento; el PEI la llama «Cátedra». El nombre del área cambia entre documentos", "corr": ["1", "4", "5"], "dec": null}, {"name": "Investigación Escolar", "how": "Con asignaturas: Investigación y Tecnoacademia (declaradas de forma expresa, p. 83)", "pei": [{"area": "Investigación Escolar", "cap2": "«Investigación Escolar», p. 33: «se imparte de 6° a 9°, ya que en 10° y 11° es el SENA (Tecnoacademia), quien acompaña»", "cap11": "No aparece", "otras": "Cap. 4, p. 83: «el área de Investigación Escolar, con sus dos asignaturas (Investigación y Tecnoacademia)». Cap. 4, pp. 94 y 95: Tecnolab con «una asignación académica de 3 periodos de clase» de 6° a 8° y de 9° a 11°"}], "peiRef": "Cap. 2, p. 33 (Investigación de 6° a 9°; SENA en 10° y 11°); Cap. 4, p. 83 (dos asignaturas) y pp. 94 y 95 (Tecnolab de 6° a 11°)", "plan": "Plan 2024, p. 2: «Asignaturas: Investigación y Tecnoacademia», cada una 3 h de 6° a 11°. Mallas pp. 33 a 71: una por grado, con campos de Tecnoacademia dentro (en 6°, «Docentes […] Tecnoacademia:» y «Competencias Tecnoacademia:» están vacíos, p. 33)", "st": "warn", "stText": "Coinciden en las dos asignaturas, no en los grados; Tecnoacademia no tiene malla propia", "corr": ["1", "6", "7", "10", "11"], "dec": "Investigación Escolar"}]};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const G={
+  area:["Área","Campo del conocimiento que la ley obliga a enseñar, como Matemáticas o Ética. La Ley 115 fija 9 en la básica y suma Ciencias Económicas y Políticas y Filosofía en la media.","En el PEI: «Ciencias Naturales y Educación Ambiental» es un área."],
+  asignatura:["Asignatura","Parte en que un colegio decide dividir un área. Cada asignatura tiene su intensidad, su malla y su valoración.","En el plan de Humanidades: Lengua Castellana e Inglés."],
+  integrada:["Área integrada","Área que se enseña completa, sin dividirla en asignaturas. Es válido según la ley: tiene una sola malla y una sola valoración.","En el PEI: Ética y Valores, Matemáticas, Filosofía."],
+  malla:["Malla curricular","Tabla del plan de área que organiza, por grado y período, los objetivos, competencias, contenidos e indicadores de desempeño.","Si el área tiene asignaturas, debe haber una malla por asignatura (Anexo E, p. 110)."],
+  pei:["PEI","Proyecto Educativo Institucional: el documento que define el horizonte, el plan de estudios y la evaluación del colegio. El capítulo 5 es el del plan de estudios.","Base de este análisis: PEILOYOLA2023.pdf, 154 páginas."],
+  anexo:["Anexo E","Documento de orientación «Reconociendo los 14 aspectos», que explica qué debe contener cada aspecto del PEI. El Aspecto 5 está en las páginas 103 a 116.","Aquí se usa como referencia para saber qué debe tener el plan de estudios."],
+  optativa:["Área optativa","Área que el colegio agrega por decisión propia. No puede pasar del 20 % de las áreas del plan de estudios (Anexo E, p. 108).","El PEI permite optativas, pero no dice cuáles son."],
+};
+// glosario
+const order=["pei","anexo","area","asignatura","integrada","malla"];
+document.getElementById("glossGrid").innerHTML=order.map(k=>`<button class="gcard" aria-expanded="false" data-g="${k}"><h3>${G[k][0]}<span>+ ejemplo</span></h3><p>${esc(G[k][1])}</p><p class="ex more">${esc(G[k][2])}</p></button>`).join("");
+document.querySelectorAll(".gcard").forEach(c=>c.addEventListener("click",()=>{const o=c.getAttribute("aria-expanded")==="true";c.setAttribute("aria-expanded",o?"false":"true");c.querySelector("h3 span").textContent=o?"+ ejemplo":"− cerrar";}));
+document.getElementById("glist").innerHTML=Object.values(G).map(g=>`<div><b>${g[0]}.</b> ${esc(g[1])} <span style="color:var(--ink-2)">${esc(g[2])}</span></div>`).join("");
+// ventana emergente de términos
+const pop=document.getElementById("pop");
+document.addEventListener("click",e=>{const t=e.target.closest(".term");
+  if(!t){if(!e.target.closest("#pop"))pop.hidden=true;return}
+  e.stopPropagation();const g=G[t.dataset.t];pop.innerHTML=`<b>${g[0]}</b>${esc(g[1])}`;pop.hidden=false;
+  const r=t.getBoundingClientRect();const w=pop.offsetWidth,h=pop.offsetHeight;
+  let x=Math.min(window.innerWidth-w-16,Math.max(16,r.left));let y=r.bottom+8;if(y+h>window.innerHeight-80)y=r.top-h-8;
+  pop.style.left=x+"px";pop.style.top=y+"px";});
+// buscador de página
+const pgIn=document.getElementById("pgIn"),pgOut=document.getElementById("pgOut");
+function pgUpd(){const v=parseInt(pgIn.value,10);pgOut.textContent=v>0?`→ en el visor del PDF vaya a la página ${v+1}`:"";}
+pgIn.addEventListener("input",pgUpd);pgUpd();
+// áreas
+const X=D.areasX;
+const ST={ok:"Coinciden",warn:"Diferencias",bad:"Falta el plan"};
+document.getElementById("areasGrid").innerHTML=D.areas.map((a,i)=>{const has=a[2].startsWith("Con asignaturas");
+  return `<button class="tile ${has?'hi':''}" data-area="${i}"><span class="n">${a[0]}</span><h3>${esc(a[1])}</h3><p>${esc(a[2])}</p></button>`}).join("");
+document.getElementById("cmpGrid").innerHTML=X.map((x,i)=>`<button class="tile ${x.st}" data-area="${i}"><h3>${esc(x.name)}</h3><p>${esc(x.stText)}</p><span class="badge b-${x.st}">${ST[x.st]}</span></button>`).join("");
+const L={ok:"Coincide",warn:"Por aclarar",info:"Área propia",bad:"Falta"};
+document.getElementById("leyGrid").innerHTML=D.ley.map(l=>`<div class="tile ${l[2]}"><span class="n">Ley: ${esc(l[0])}</span><h3>${esc(l[1])}</h3>${l[2]==='ok'?'':`<p>${esc(l[3])}</p>`}<span class="badge b-${l[2]}">${L[l[2]]}</span></div>`).join("");
+document.getElementById("vsGrid").innerHTML=D.contradicciones.map(c=>`<div class="vcard"><h3>${esc(c[0])}</h3><div class="side"><div><span>Un pasaje dice</span>${esc(c[1])}</div><div><span>Otro pasaje dice</span>${esc(c[2])}</div></div></div>`).join("");
+document.getElementById("decList").innerHTML=D.decisiones.map(d=>`<li><b>${esc(d[0])}:</b> ${esc(d[1])}</li>`).join("");
+// explorador
+const alist=document.getElementById("alist"),detail=document.getElementById("detail");
+const col={ok:"var(--ok)",warn:"var(--warn)",bad:"var(--bad)"};
+alist.innerHTML=X.map((x,i)=>`<button class="abtn" data-i="${i}" aria-pressed="false"><i style="background:${col[x.st]}"></i>${esc(x.name)}</button>`).join("");
+const C=Object.fromEntries(D.correcciones.map(c=>[c[0],c]));
+const DEC=Object.fromEntries(D.decisiones.map(d=>[d[0],d[1]]));
+function showArea(i){const x=X[i];
+  alist.querySelectorAll(".abtn").forEach(b=>b.setAttribute("aria-pressed",b.dataset.i==i?"true":"false"));
+  const pei=x.pei.map(p=>`<p><b>${esc(p.area)}</b> · Cap. 2: ${esc(p.cap2)}</p><p>Cap. 11: ${esc(p.cap11)}</p>${p.otras&&p.otras!=='—'&&p.otras!=='Ver la fila anterior'?`<p>Otras: ${esc(p.otras)}</p>`:''}`).join("");
+  const corr=x.corr.map(n=>{const c=C[n];return `<div class="citem k-${c[5]}"><b>${c[0]}. ${esc(c[1])}</b><dl><dt>En el PEI</dt><dd>${esc(c[2])}</dd><dt>En el plan</dt><dd>${esc(c[3])}</dd><dt>Cuándo</dt><dd>${c[5]==='ya'?'De inmediato':'Tras la decisión del Consejo Académico'}</dd></dl></div>`}).join("");
+  detail.innerHTML=`<div><span class="badge b-${x.st}">${ST[x.st]}</span><h3>${esc(x.name)}</h3><p class="src">${esc(x.how)}</p></div>
+  <div class="dgrid"><div class="dbox"><span class="lbl">Qué dice el PEI</span>${pei}</div><div class="dbox"><span class="lbl">Qué dice su plan de área</span><p>${esc(x.plan)}</p></div></div>
+  <div class="dbox"><span class="lbl">¿Coinciden?</span><p>${esc(x.stText)}</p></div>
+  ${x.dec?`<div class="dbox"><span class="lbl">Decisión pendiente del Consejo Académico</span><p>${esc(DEC[x.dec])}</p></div>`:''}
+  <div><span class="lbl kicker">Correcciones que le aplican</span><div class="clist">${corr}</div></div>`;}
+alist.addEventListener("click",e=>{const b=e.target.closest(".abtn");if(b)showArea(+b.dataset.i)});
+showArea(0);
+const EXPLORER=[...document.querySelectorAll(".slide")].findIndex(s=>s.dataset.name==="Explorador por área");
+document.querySelectorAll("[data-area]").forEach(b=>b.addEventListener("click",()=>{showArea(+b.dataset.area);go(EXPLORER)}));
+// correcciones
+const areaSel=document.getElementById("areaSel");
+areaSel.innerHTML+=X.map((x,i)=>`<option value="${i}">${esc(x.name)}</option>`).join("");
+const where=c=>c[3].trim()==='—'?'pei':(c[2].trim()==='—'?'plan':'both');
+let fW="all",fC="all";
+function renderCorr(){const ai=areaSel.value;const set=ai===""?null:new Set(X[+ai].corr);
+  const list=D.correcciones.filter(c=>(fW==="all"||where(c)===fW||where(c)==="both")&&(fC==="all"||c[5]===fC)&&(!set||set.has(c[0])));
+  document.getElementById("corrCount").textContent=`${list.length} de 13`;
+  document.getElementById("corrCards").innerHTML=list.map(c=>`<article class="ccard"><header><b>${c[0]}</b><h3>${esc(c[1])}</h3><span class="badge ${c[5]==='ya'?'b-ok':'b-warn'}">${c[5]==='ya'?'De inmediato':'Tras decisión'}</span></header><dl><dt>En el PEI</dt><dd>${esc(c[2])}</dd><dt>En el plan</dt><dd>${esc(c[3])}</dd><dt>Por qué</dt><dd>${esc(c[4])}</dd></dl></article>`).join("");}
+document.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{fW=b.dataset.w;document.querySelectorAll("[data-w]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));renderCorr()}));
+document.querySelectorAll("[data-c]").forEach(b=>b.addEventListener("click",()=>{fC=b.dataset.c;document.querySelectorAll("[data-c]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));renderCorr()}));
+areaSel.addEventListener("change",renderCorr);renderCorr();
+// quiz
+const Q=[
+ ["¿Es obligatorio dividir el área de Ética en asignaturas?",["Sí, la ley lo exige","No, puede ser un área integrada"],1,"Correcto: la ley obliga a ofrecer el área, no a dividirla. El colegio decide (Anexo E, p. 109)."],
+ ["¿Qué le falta al Capítulo 5 del PEI?",["La definición de plan de estudios","La tabla oficial de áreas, asignaturas e intensidad","Citar el artículo 79"],1,"El capítulo anuncia el plan de 2022 y no trae la tabla (PEI, pp. 98 y 99)."],
+ ["Si un área se divide en asignaturas, ¿cómo debe ir la malla?",["Una sola malla para el área","Una malla por asignatura"],1,"«La malla curricular también deberá especificarse por asignaturas» (Anexo E, p. 110)."],
+ ["El documento cita la página 98 del PEI. ¿Qué página busco en el visor del PDF?",["97","98","99"],2,"Las páginas citadas son las impresas; en el visor del PDF son una más."],
+ ["¿Qué área no tiene plan en la carpeta MALLAS?",["Filosofía","Ciencias Políticas y Económicas","Educación Religiosa"],1,"Religión sí tiene plan (en Word). Falta el de Ciencias Políticas y Económicas."],
+];
+const answered={};
+document.getElementById("quiz").innerHTML=Q.map((q,i)=>`<div class="q" data-q="${i}"><h3>${i+1}. ${esc(q[0])}</h3><div class="opts">${q[1].map((o,j)=>`<button class="opt" data-j="${j}">${esc(o)}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+document.getElementById("quiz").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;const qd=b.closest(".q"),i=+qd.dataset.q,j=+b.dataset.j,q=Q[i];
+  qd.querySelectorAll(".opt").forEach(o=>o.classList.remove("right","wrong"));
+  b.classList.add(j===q[2]?"right":"wrong");const fb=qd.querySelector(".fb");fb.hidden=false;fb.textContent=(j===q[2]?"✔ ":"✖ Revise: ")+q[3];
+  if(!(i in answered))answered[i]=j===q[2];
+  const n=Object.keys(answered).length;document.getElementById("score").textContent=n===Q.length?`Acertó ${Object.values(answered).filter(Boolean).length} de ${Q.length} en el primer intento.`:"";});
+// navegación
+const S=[...document.querySelectorAll(".slide")],dots=document.getElementById("dots"),toc=document.getElementById("toc");
+let i=0;
+S.forEach((s,k)=>{const d=document.createElement("button");d.className="dot";d.setAttribute("aria-label","Ir a: "+s.dataset.name);d.onclick=()=>go(k);dots.appendChild(d);
+  const li=document.createElement("li");li.innerHTML=`<button data-k="${k}"><span>${k+1}</span>${esc(s.dataset.name)}</button>`;toc.appendChild(li);});
+toc.addEventListener("click",e=>{const b=e.target.closest("button");if(b){closePanels();go(+b.dataset.k)}});
+function go(k){i=Math.max(0,Math.min(S.length-1,k));
+  S.forEach((s,n)=>{s.classList.toggle("on",n===i);s.setAttribute("aria-hidden",n===i?"false":"true")});
+  [...dots.children].forEach((d,n)=>d.classList.toggle("on",n===i));
+  toc.querySelectorAll("button").forEach((b,n)=>b.classList.toggle("cur",n===i));
+  document.getElementById("count").textContent=(i+1)+" / "+S.length;
+  document.getElementById("secName").textContent=S[i].dataset.name;
+  document.getElementById("prev").disabled=i===0;document.getElementById("next").disabled=i===S.length-1;
+  document.getElementById("bar").style.width=((i+1)/S.length*100)+"%";
+  S[i].scrollTop=0;pop.hidden=true;
+  try{history.replaceState(null,"","#d"+(i+1))}catch(e){}}
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.goto)));
+document.getElementById("prev").onclick=()=>go(i-1);
+document.getElementById("next").onclick=()=>go(i+1);
+// paneles
+const scrim=document.getElementById("scrim"),tocP=document.getElementById("tocPanel"),gloP=document.getElementById("gloPanel");
+function openPanel(p){closePanels();p.hidden=false;scrim.hidden=false;p.querySelector("[data-close]").focus();}
+function closePanels(){tocP.hidden=true;gloP.hidden=true;scrim.hidden=true;}
+document.getElementById("btnToc").onclick=()=>openPanel(tocP);
+document.getElementById("btnGlo").onclick=()=>openPanel(gloP);
+scrim.onclick=closePanels;document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closePanels);
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){closePanels();pop.hidden=true;return}
+  if(e.target.closest&&e.target.closest("input,select,textarea"))return;
+  if(!tocP.hidden||!gloP.hidden)return;
+  if(["ArrowRight","PageDown"].includes(e.key)){e.preventDefault();go(i+1)}
+  if(["ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();go(i-1)}
+  if(e.key==="Home")go(0); if(e.key==="End")go(S.length-1);});
+let x0=null,y0=null;document.addEventListener("touchstart",e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchend",e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5&&tocP.hidden&&gloP.hidden)go(i+(dx<0?1:-1));x0=null},{passive:true});
+const m=/^#d(\d+)$/.exec(location.hash);go(m?parseInt(m[1])-1:0);
+</script>
+
+</body>
+</html>
